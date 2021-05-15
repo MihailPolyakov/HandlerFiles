@@ -17,7 +17,7 @@ class FileWorker
             $mimeType = $document->getMimeType();
             $fileId = $document->getFileId();
             $fileName = $document->getFileName();
-
+            file_put_contents(__DIR__ . "../log.txt", $mimeType);
             $folderFiles = null;
             $folderUser = $chatId;
             if(stripos($mimeType, 'csv') || stripos($mimeType, 'comma-separated-values')){
