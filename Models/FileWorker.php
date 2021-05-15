@@ -70,9 +70,12 @@ class FileWorker
     public static function generateReport(string $chat_id): array
     {
         try {
+
             $folderPathCsv = __DIR__ . "/../Storage/" . $chat_id . "/csv";
             $folderPathTin = __DIR__ . "/../Storage/" . $chat_id . "/tin";
             $folderOutputFiles = __DIR__ . "/../Storage/" . $chat_id . "/output";
+
+
             mkdir($folderOutputFiles);
 
             $filesCsv = scandir($folderPathCsv);
