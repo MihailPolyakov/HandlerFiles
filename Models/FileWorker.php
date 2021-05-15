@@ -42,7 +42,7 @@ class FileWorker
             }
 
             if(is_bool(file_put_contents($pathFolderFiles . "/" . $fileName, $dataFile))){
-                file_put_contents(__DIR__ . "/../log.txt", $fileName);
+                file_put_contents(__DIR__ . "/../log.txt", $dataFile);
                 return false;
             } else {
                 return true;
