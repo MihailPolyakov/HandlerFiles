@@ -28,7 +28,6 @@ try {
                 ButtonsTelegram::getButtonsForTinkoff($botApi, $message->getChat()->getId());
                 break;*/
             case "Сгенерить":
-                break;
                 $status = StatusMaker::getStatus($message->getChat()->getId());
                 if($status === 'final' || empty($status)){
                     $botApi->sendMessage($message->getChat()->getId(), 'Вы не загрузили файлы');
