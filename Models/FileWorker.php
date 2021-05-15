@@ -37,6 +37,10 @@ class FileWorker
 
             $dataFile = $botApi->downloadFile($fileId);
 
+            if($folderFiles === "tin"){
+                $dataFile = base64_decode($dataFile);
+            }
+
             if(is_bool(file_put_contents($pathFolderFiles . "/" . $fileName, $dataFile))){
                 file_put_contents(__DIR__ . "/../log.txt", $fileName);
                 return false;
