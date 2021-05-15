@@ -38,12 +38,12 @@ class FileWorker
             $dataFile = $botApi->downloadFile($fileId);
 
             if(is_bool(file_put_contents($pathFolderFiles . "/" . $fileName, $dataFile))){
+                file_put_contents(__DIR__ . "/../log.txt", $fileName);
                 return false;
             } else {
                 return true;
             }
         } catch (Exception $e){
-            file_put_contents(__DIR__ . "/../log.txt", $e->getMessage());
             return false;
         }
 
