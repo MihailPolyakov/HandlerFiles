@@ -36,7 +36,11 @@ try {
                 $botApi->sendMessage($message->getChat()->getId(), 'Генерация началась');
                 $result = FileWorker::generateReport($message->getChat()->getId());
                 if($result['sum'] === 0){
-                    $botApi->sendMessage($message->getChat()->getId(), 'Все совпадает');
+                    if($result['result'] === ''){
+                        $botApi->sendMessage($message->getChat()->getId(), 'Все совпадает');
+                    } else {
+                        $botApi->sendMessage($message->getChat()->getId(), $result['result']);
+                    }
                 } else {
                     $lengthText = iconv_strlen($result['result']);
                     $pullMessages = [];
