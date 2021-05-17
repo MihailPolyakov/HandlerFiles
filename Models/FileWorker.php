@@ -148,10 +148,11 @@ class FileWorker
                 fputcsv($outputTin, [$dates[$item], preg_replace('/[.]/', ',', (string )$sum)]);
 
                 $existRange = false;
+                file_put_contents(__DIR__ . "/../log.txt", json_encode($arrayRangeDate));
+                exit;
                 foreach ($arrayRangeDate as $range){
+
                     if($range['min'] >= $date && $date <= $range['max']){
-                        file_put_contents(__DIR__ . "/../log.txt", $range['min'] . "\n" . $date . "\n" . $range['max']);
-                        exit;
                         $existRange = true;
                         break;
                     }
