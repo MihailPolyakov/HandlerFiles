@@ -91,8 +91,8 @@ class FileWorker
             $filePdf = Pdf::getText($folderPathTin . "/" . $filePdf);
             preg_match_all('/\d{2}[.]\d{2}[.]\d{4}\s{1,}\d{2}:\d{2}/', $filePdf, $dateMatch);
             preg_match_all('/\d{1,}\s?\d{0,},\d{2}/', $filePdf, $sumMatch);
-            $dates = $dateMatch[0];
-            $sums = array_slice($sumMatch[0], 3);
+            $dates = array_reverse($dateMatch[0]);
+            $sums = array_reverse(array_slice($sumMatch[0], 3));
 
             $arrayOutput = [
                 'sum' => 0,
