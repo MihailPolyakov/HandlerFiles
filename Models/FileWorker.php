@@ -101,7 +101,7 @@ class FileWorker
                 }
 
                 while (($array = fgetcsv($fopen)) != false){
-                    $dateString = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC+3');
+                    $dateString = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
                     $dateString = $dateString->format('Y-m-d H:i');
                     file_put_contents('log.txt', $dateString . "\n" . $array[2]);
                     exit;
