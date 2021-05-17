@@ -7,6 +7,8 @@ require_once "vendor/autoload.php";
 require_once "env.php";
 
 try {
+    set_time_limit(1200);
+
     $bot = new \TelegramBot\Api\Client(TOKEN_TELEGRAM);
     $botApi = new \TelegramBot\Api\BotApi(TOKEN_TELEGRAM);
 
