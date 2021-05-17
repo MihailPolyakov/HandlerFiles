@@ -104,8 +104,8 @@ class FileWorker
                 if($file === "." || $file === "..") continue;
 
                 $arrayRangeDate[$keyIndexRange] = [
-                    'min' => '',
-                    'max' => ''
+                    'min' => 0,
+                    'max' => 0
                 ];
 
                 $fopen = fopen($folderPathCsv . "/" . $file, 'r');
@@ -120,15 +120,15 @@ class FileWorker
 
                 while (($array = fgetcsv($fopen)) != false){
                     $dateString = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
-                    $dateStringMin = $dateString->format('d.m.Y H:i');
-                    $dateStringMax = $dateString->addMinutes(5)->format('d.m.Y H:i');
+                    $dateStringMin = $dateString->getTimestamp();
+                    $dateStringMax = $dateString->addMinutes(5)->getTimestamp();
                     $sum = round((float) $array[3], 2);
 
-                    if($arrayRangeDate[$keyIndexRange]['min'] === '' || $arrayRangeDate[$keyIndexRange]['min'] > $dateStringMin){
+                    if($arrayRangeDate[$keyIndexRange]['min'] === 0 || $arrayRangeDate[$keyIndexRange]['min'] > $dateStringMin){
                         $arrayRangeDate[$keyIndexRange]['min'] = $dateStringMin;
                     }
 
-                    if($arrayRangeDate[$keyIndexRange]['max'] === '' || $arrayRangeDate[$keyIndexRange]['max'] < $dateStringMax){
+                    if($arrayRangeDate[$keyIndexRange]['max'] === 0 || $arrayRangeDate[$keyIndexRange]['max'] < $dateStringMax){
                         $arrayRangeDate[$keyIndexRange]['max'] = $dateStringMax;
                     }
 
@@ -150,13 +150,15 @@ class FileWorker
                 $existRange = false;
 
                 foreach ($arrayRangeDate as $range){
+                    $dateTime = Carbon::createFromFormat('d.m.Y H:i', $date)->getTimestamp();
+
                     file_put_contents(__DIR__ . "/../log.txt", json_encode([
-                        'result' => $range['min'] >= $date && $date <= $range['max'],
-                        'result1' => $range['min'] >= $date,
-                        'result2' => $range['min'] >= $date,
+                        'result' => $range['min'] >= $dateTime && $dateTime <= $range['max'],
+                        'result1' => $range['min'] >= $dateTime,
+                        'result2' => $range['min'] >= $dateTime,
                         'min' => $range['min'],
                         'max' => $range['max'],
-                        'current' => $date
+                        'current' => $dateTime
                     ]));
                     exit;
                     if($range['min'] >= $date && $date <= $range['max']){
