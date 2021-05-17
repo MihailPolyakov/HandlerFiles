@@ -23,7 +23,7 @@ class FileWorker
             $folderUser = $chatId;
             if(stripos($mimeType, 'csv') || stripos($mimeType, 'comma-separated-values')){
                 $folderFiles = "csv";
-            } elseif (stripos($mimeType, "pdf")){
+            } elseif (stripos($mimeType, "pdf") || $mimeType === "application/binary"){
                 $folderFiles = "tin";
             } else {
                 return false;
