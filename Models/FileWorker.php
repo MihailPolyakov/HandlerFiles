@@ -179,6 +179,9 @@ class FileWorker
 
             fputcsv($outputCsv, $headerCsv);
 
+            file_put_contents(__DIR__ . "/../log.txt", json_encode($arrayDataCsv));
+            exit;
+
             foreach ($arrayDataCsv as $data){
                 $dateObject = Carbon::createFromFormat('d.m.Y H:i', $data[0]);
                 fputcsv($outputCsv, [$data[0], preg_replace('/[.]/', ',', (string)$data[1]), $data[2]]);
