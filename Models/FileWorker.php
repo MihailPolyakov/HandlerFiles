@@ -197,8 +197,7 @@ class FileWorker
                 $arrayOutput['result'] .= $data[0] . " - " . (string)$data[1] . " руб. Нет прихода\n";
                 $arrayOutput['sum'] -= $data[1];
             }
-            file_put_contents(__DIR__ . "/../log.txt", 'Finish search');
-            exit;
+
             fclose($outputCsv);
 
             foreach ($arrayDataTin as $key => $value){
@@ -207,6 +206,9 @@ class FileWorker
                     $arrayOutput['sum'] += $sum;
                 }
             }
+
+            file_put_contents(__DIR__ . "/../log.txt", 'Finish search 2');
+            exit;
 
             $arrayOutput['sum'] = round($arrayOutput['sum'], 2);
             $arrayOutput['result'] .= "==========\n" . $arrayOutput['sum'] . " руб Итого разница";
