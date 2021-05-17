@@ -185,7 +185,7 @@ class FileWorker
                 $resource = fopen(__DIR__ . "/../log.csv", 'w');
                 for($minute = 0; $minute <= 5; $minute++){
                     $dateString = $dateObject->format('d.m.Y H:i');
-                    if($data[2] === "609ce49b3fc23229e93ffc85"){
+                    if($data[2] == "609ce4953fc23229e93ffc84"){
                         fputcsv($resource, [$dateString, $data[1]]);
                     }
                     if(!empty($arrayDataTin[$dateString])){
