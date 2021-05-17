@@ -185,11 +185,11 @@ class FileWorker
 
                 for($minute = 0; $minute <= 5; $minute++){
                     $dateString = $dateObject->format('d.m.Y H:i');
-                    if($data[2] == "609ce4953fc23229e93ffc84"){
-                        fputcsv($resource, [$dateString, $data[1]]);
-                    }
                     if(!empty($arrayDataTin[$dateString])){
                         $sumKey = array_search($data[1], $arrayDataTin[$dateString]);
+                        if($data[2] == "609ce4953fc23229e93ffc84"){
+                            fputcsv($resource, [$dateString, $data[1], $sumKey]);
+                        }
                         if(!is_bool($sumKey)){
                             unset($arrayDataTin[$dateString][$sumKey]);
                             continue 2;
