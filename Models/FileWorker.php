@@ -122,6 +122,7 @@ class FileWorker
                     $dateString = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
                     $dateStringMin = $dateString->getTimestamp();
                     $dateStringMax = $dateString->addMinutes(5)->getTimestamp();
+                    $dateString = $dateString->format('d.m.Y H:i');
                     $sum = round((float) $array[3], 2);
 
                     if($arrayRangeDate[$keyIndexRange]['min'] === 0 || $arrayRangeDate[$keyIndexRange]['min'] > $dateStringMin){
@@ -132,7 +133,7 @@ class FileWorker
                         $arrayRangeDate[$keyIndexRange]['max'] = $dateStringMax;
                     }
 
-                    $arrayDataCsv[] = [$dateStringMin, $sum, $array[0]];
+                    $arrayDataCsv[] = [$dateString, $sum, $array[0]];
                 }
 
                 fclose($fopen);
