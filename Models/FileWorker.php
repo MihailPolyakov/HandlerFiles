@@ -74,12 +74,11 @@ class FileWorker
             $folderPathCsv = __DIR__ . "/../Storage/" . $chat_id . "/csv";
             $folderPathTin = __DIR__ . "/../Storage/" . $chat_id . "/tin";
             $folderOutputFiles = __DIR__ . "/../Storage/" . $chat_id . "/output";
-
-
+            
             mkdir($folderOutputFiles);
 
             $filesCsv = scandir($folderPathCsv);
-            $fileTxt = scandir($folderPathTin)[2];
+            $filePdf = scandir($folderPathTin)[2];
 
             $arrayDataCsv = [];
             $headerCsv = false;
@@ -102,6 +101,8 @@ class FileWorker
 
                 while (($array = fgetcsv($fopen)) != false){
                     $dateArray = date_parse($array[2] . " +3 hour");
+                    file_put_contents(__DIR__ . '/../log.txt', $array[2] . "\n" . $dateArray);
+                    exit;
                     $sum = round((float) $array[3], 2);
 
                     $day = $dateArray['day'] >= 10 ? (string) $dateArray['day'] : "0" . (string) $dateArray['day'];
@@ -119,11 +120,10 @@ class FileWorker
 
             fclose($outputCsv);
 
-
-            //$fileTxt = file_get_contents($folderPathTin . "/" . $fileTxt);
-            $fileTxt = Pdf::getText($folderPathTin . "/" . $fileTxt);
-            preg_match_all('/\d{2}[.]\d{2}[.]\d{4}\s{1,}\d{2}:\d{2}/', $fileTxt, $dateMatch);
-            preg_match_all('/\d{1,}\s?\d{0,},\d{2}/', $fileTxt, $sumMatch);
+            
+            $filePdf = Pdf::getText($folderPathTin . "/" . $filePdf);
+            preg_match_all('/\d{2}[.]\d{2}[.]\d{4}\s{1,}\d{2}:\d{2}/', $filePdf, $dateMatch);
+            preg_match_all('/\d{1,}\s?\d{0,},\d{2}/', $filePdf, $sumMatch);
             $dates = $dateMatch[0];
             $sums = array_slice($sumMatch[0], 3);
 
