@@ -186,7 +186,7 @@ class FileWorker
                 for($minute = 0; $minute <= 5; $minute++){
                     $dateString = $dateObject->format('d.m.Y H:i');
                     if(!empty($arrayDataTin[$dateString])){
-                        $sumKey = array_search($arrayDataTin[$dateString], $data[1]);
+                        $sumKey = array_search($data[1], $arrayDataTin[$dateString]);
                         if(!is_bool($sumKey)){
                             unset($arrayDataTin[$dateString][$sumKey]);
                             continue 2;
