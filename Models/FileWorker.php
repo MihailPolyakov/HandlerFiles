@@ -82,42 +82,12 @@ class FileWorker
             $filePdf = scandir($folderPathTin)[2];
 
             $arrayDataCsv = [];
-            $headerCsv = false;
+            $arrayDataTin = [];
+            $headerCsv = [];
+            $arrayRangeDate = [];
             $outputCsv = fopen($folderOutputFiles . "/output.csv", "w");
             $outputTin = fopen($folderOutputFiles . "/output_tin.csv", "w");
 
-            foreach ($filesCsv as $file){
-                if($file === "." || $file === "..") continue;
-
-                $fopen = fopen($folderPathCsv . "/" . $file, 'r');
-
-                if(!$headerCsv){
-                    $header = fgetcsv($fopen);
-                    $header = [$header[2], $header[3]];
-                    fputcsv($outputCsv, $header);
-                    $headerCsv = true;
-                } else {
-                    fgetcsv($fopen);
-                }
-
-                while (($array = fgetcsv($fopen)) != false){
-                    $dateString = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
-                    $dateString = $dateString->format('Y-m-d H:i');
-
-                    $sum = round((float) $array[3], 2);
-
-                    fputcsv($outputCsv, [$dateString, $array[3]]);
-                    if(empty($arrayDataCsv[$dateString])) $arrayDataCsv[$dateString] = [];
-
-                    $arrayDataCsv[$dateString][] = $sum;
-                }
-
-                fclose($fopen);
-            }
-
-            fclose($outputCsv);
-
-            
             $filePdf = Pdf::getText($folderPathTin . "/" . $filePdf);
             preg_match_all('/\d{2}[.]\d{2}[.]\d{4}\s{1,}\d{2}:\d{2}/', $filePdf, $dateMatch);
             preg_match_all('/\d{1,}\s?\d{0,},\d{2}/', $filePdf, $sumMatch);
@@ -129,37 +99,108 @@ class FileWorker
                 'result' => ""
             ];
 
+            $keyIndexRange = 0;
+            foreach ($filesCsv as $file){
+                if($file === "." || $file === "..") continue;
+
+                $arrayRangeDate[$keyIndexRange] = [
+                    'min' => '',
+                    'max' => ''
+                ];
+
+                $fopen = fopen($folderPathCsv . "/" . $file, 'r');
+
+                if(is_null($headerCsv)){
+                    $header = fgetcsv($fopen);
+                    $headerCsv = [$header[2], $header[3], $header[0]];
+                } else {
+                    fgetcsv($fopen);
+                }
+
+
+                while (($array = fgetcsv($fopen)) != false){
+                    $dateString = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
+                    $dateStringMin = $dateString->format('d.m.Y H:i');
+                    $dateStringMax = $dateString->addMinutes(5)->format('d.m.Y H:i');
+                    $sum = round((float) $array[3], 2);
+
+                    if($arrayRangeDate[$keyIndexRange]['min'] === '' || $arrayRangeDate[$keyIndexRange]['min'] > $dateStringMin){
+                        $arrayRangeDate[$keyIndexRange]['min'] = $dateStringMin;
+                    }
+
+                    if($arrayRangeDate[$keyIndexRange]['max'] === '' || $arrayRangeDate[$keyIndexRange]['max'] < $dateStringMax){
+                        $arrayRangeDate[$keyIndexRange]['max'] = $dateStringMax;
+                    }
+
+                    $arrayDataCsv[] = [$dateStringMin, $sum, $array[0]];
+                }
+
+                fclose($fopen);
+                $keyIndexRange++;
+            }
+
             fputcsv($outputTin, ["Дата", "Сумма"]);
             for($item = 1; $item < count($dates); $item += 2){
-                preg_match('/\d{2}[.]\d{2}[.]\d{4}/', $dates[$item], $match);
+                preg_match('/\d{2}[.]\d{2}[.]\d{4}\s\d{2}:\d{2}/', $dates[$item], $match);
                 $date = $match[0];
                 $sum = (float) preg_replace('/,/', ".", preg_replace('/\s/', '', $sums[$item]));
 
-                fputcsv($outputTin, [$dates[$item], $sum]);
+                fputcsv($outputTin, [$dates[$item], preg_replace('/[.]/', ',', (string )$sum)]);
 
-                $text = $date . " - " . $sum . " руб. Лишнее зачисление\n";
-                if(empty($arrayDataCsv[$date])){
-                    $arrayOutput['result'] .= $text;
-                    $arrayOutput['sum'] += $sum;
-                    continue;
+                $existRange = false;
+                foreach ($arrayRangeDate as $range){
+                    if($range['min'] >= $date && $date <= $range['max']){
+                        $existRange = true;
+                        break;
+                    }
                 }
+                if(!$existRange) continue;
 
-                $indexSum = array_search($sum, $arrayDataCsv[$date]);
-                if(is_bool($indexSum)){
-                    $arrayOutput['result'] .= $text;
-                    $arrayOutput['sum'] += $sum;
-                    continue;
-                } else {
-                    unset($arrayDataCsv[$date][$indexSum]);
-                }
+                if(empty($arrayDataTin[$date])) $arrayDataTin[$date] = [];
+
+                $arrayDataTin[$date][] = $sum;
             }
 
             fclose($outputTin);
 
-            foreach ($arrayDataCsv as $key => $value){
+            usort($arrayDataCsv, function ($a, $b){
+                if($a < $b){
+                    return -1;
+                }
+                if($a > $b){
+                    return 1;
+                }
+                return 0;
+            });
+
+            fputcsv($outputCsv, $headerCsv);
+
+            foreach ($arrayDataCsv as $data){
+                $dateObject = Carbon::createFromFormat('d.m.Y H:i', $data[0]);
+                fputcsv($outputCsv, [$data[0], preg_replace('/[.]/', ',', (string)$data[1]), $data[2]]);
+
+                for($minute = 0; $minute <= 5; $minute++){
+                    $dateString = $dateObject->format('d.m.Y H:i');
+                    if(!empty($arrayDataTin[$dateString])){
+                        $sumKey = array_search($arrayDataTin[$dateString], $data[1]);
+                        if(!is_bool($sumKey)){
+                            unset($arrayDataTin[$dateString][$sumKey]);
+                            continue 2;
+                        }
+                    }
+                    $dateObject->addMinutes();
+                }
+
+                $arrayOutput['result'] .= $data[0] . " - " . (string)$data[1] . " руб. Нет прихода\n";
+                $arrayOutput['sum'] -= $data[1];
+            }
+
+            fclose($outputCsv);
+
+            foreach ($arrayDataTin as $key => $value){
                 foreach ($value as $sum){
-                    $arrayOutput['result'] .= $key . " - " . $sum . " руб. Нет прихода\n";
-                    $arrayOutput['sum'] -= $sum;
+                    $arrayOutput['result'] .= $key . " - " . $sum . " руб. Лишнее зачисление\n";
+                    $arrayOutput['sum'] += $sum;
                 }
             }
 
