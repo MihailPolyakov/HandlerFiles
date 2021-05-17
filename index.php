@@ -56,6 +56,8 @@ try {
 
                             if (preg_match('/(\\n)$/', $preparePull) === 1) {
                                 $pullMessages[] = $preparePull;
+                                $lengthText = mb_strlen($preparePull);
+                                $result['result'] = mb_substr($result['result'], $lengthText);
                             } else {
                                 $text = preg_replace('/([а-яА-Я .0-9-]+)$/', "", $preparePull);
                                 $lengthText = mb_strlen($text);
