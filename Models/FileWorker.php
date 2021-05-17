@@ -149,9 +149,9 @@ class FileWorker
 
                 $existRange = false;
                 foreach ($arrayRangeDate as $range){
-                    file_put_contents(__DIR__ . "/../log.txt", strlen($range['min']) . "\n" . strlen($date));
-                    exit;
                     if($range['min'] >= $date && $date <= $range['max']){
+                        file_put_contents(__DIR__ . "/../log.txt", $range['min'] . "\n" . $date . "\n" . $range['max']);
+                        exit;
                         $existRange = true;
                         break;
                     }
