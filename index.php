@@ -37,7 +37,7 @@ try {
                 }
                 $botApi->sendMessage($message->getChat()->getId(), 'Генерация началась');
                 $result = FileWorker::generateReport($message->getChat()->getId());
-                file_put_contents('log.txt', json_encode($result));
+
                 if($result['sum'] === 0){
                     if($result['result'] === ''){
                         $botApi->sendMessage($message->getChat()->getId(), 'Все совпадает');
@@ -51,6 +51,8 @@ try {
                     if($lengthText >= 4096) {
                         while (iconv_strlen($result['result']) >= 4096) {
                             $preparePull = mb_substr($result['result'], 0, 4094);
+                            file_put_contents('log.txt', preg_match('/(\\n)$/', $preparePull));
+                            exit;
 
                             if (preg_match('/(\\n)$/', $preparePull) === 1) {
                                 $pullMessages[] = $preparePull;
