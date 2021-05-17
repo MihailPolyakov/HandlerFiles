@@ -103,17 +103,8 @@ class FileWorker
                 while (($array = fgetcsv($fopen)) != false){
                     $dateString = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
                     $dateString = $dateString->format('Y-m-d H:i');
-                    file_put_contents('log.txt', $dateString . "\n" . $array[2]);
-                    exit;
 
                     $sum = round((float) $array[3], 2);
-
-                    /*$day = $dateArray['day'] >= 10 ? (string) $dateArray['day'] : "0" . (string) $dateArray['day'];
-                    $month = $dateArray['month'] >= 10 ? (string) $dateArray['month'] : "0" . (string) $dateArray['month'];
-                    $year = (string) $dateArray['year'];
-                    $hour = $dateArray['hour'] >= 10 ? (string) $dateArray['hour'] : "0" . (string) $dateArray['hour'];
-                    $minute = $dateArray['minute'] >= 10 ? (string) $dateArray['minute'] : "0" . (string) $dateArray['minute'];
-                    $dateString =  $day . "." . $month . "." . $year . " " . $hour . ":" . $minute;*/
 
                     fputcsv($outputCsv, [$dateString, $array[3]]);
                     if(empty($arrayDataCsv[$dateString])) $arrayDataCsv[$dateString] = [];
