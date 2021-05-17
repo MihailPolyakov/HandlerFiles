@@ -121,8 +121,8 @@ class FileWorker
                 while (($array = fgetcsv($fopen)) != false){
                     $dateObject = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
                     $dateString = $dateObject->format('d.m.Y H:i');
-                    $dateStringMin = $dateObject->getTimestamp();
-                    $dateStringMax = $dateObject->addMinutes(5)->getTimestamp();
+                    $dateStringMin = $dateObject->format('d.m.Y H:i');;
+                    $dateStringMax = $dateObject->addMinutes(5)->format('d.m.Y H:i');;
                     $sum = round((float) $array[3], 2);
 
                     if($arrayRangeDate[$keyIndexRange]['min'] === 0 || $arrayRangeDate[$keyIndexRange]['min'] > $dateStringMin){
@@ -152,7 +152,7 @@ class FileWorker
                 $existRange = false;
 
                 foreach ($arrayRangeDate as $range){
-                    $dateTime = Carbon::createFromFormat('d.m.Y H:i', $date)->getTimestamp();
+                    $dateTime = Carbon::createFromFormat('d.m.Y H:i', $date)->format('d.m.Y H:i');;
 
                     if($range['min'] <= $dateTime && $dateTime <= $range['max']){
                         $existRange = true;
