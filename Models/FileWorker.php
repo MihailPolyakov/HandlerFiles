@@ -141,7 +141,7 @@ class FileWorker
             }
 
             fputcsv($outputTin, ["Дата", "Сумма"]);
-            file_put_contents(__DIR__ . "/../log.txt", json_encode($arrayRangeDate));
+
             for($item = 1; $item < count($dates); $item += 2){
                 preg_match('/\d{2}[.]\d{2}[.]\d{4}\s\d{2}:\d{2}/', $dates[$item], $match);
                 $date = $match[0];
