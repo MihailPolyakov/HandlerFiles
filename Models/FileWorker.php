@@ -208,7 +208,7 @@ class FileWorker
             }
 
             $arrayOutput['sum'] = round($arrayOutput['sum'], 2);
-            $arrayOutput['result'] .= "==========\n" . $arrayOutput['sum'] . " руб Итого разница";
+            $arrayOutput['result'] .= "==========\n" . $arrayOutput['sum'] . " руб Итого разница\n";
 
             return $arrayOutput;
         } catch (Exception $e){
