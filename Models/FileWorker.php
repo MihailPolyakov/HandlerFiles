@@ -182,9 +182,12 @@ class FileWorker
             foreach ($arrayDataCsv as $data){
                 $dateObject = Carbon::createFromFormat('d.m.Y H:i', $data[0]);
                 fputcsv($outputCsv, [$data[0], preg_replace('/[.]/', ',', (string)$data[1]), $data[2]]);
-
+                $resource = fopen(__DIR__ . "/../log.csv", 'w');
                 for($minute = 0; $minute <= 5; $minute++){
                     $dateString = $dateObject->format('d.m.Y H:i');
+                    if($data[2] === "609ce49b3fc23229e93ffc85"){
+                        fputcsv($resource, [$dateString, $data[1]]);
+                    }
                     if(!empty($arrayDataTin[$dateString])){
                         $sumKey = array_search($data[1], $arrayDataTin[$dateString]);
                         if(!is_bool($sumKey)){
@@ -194,6 +197,7 @@ class FileWorker
                     }
                     $dateObject->addMinutes();
                 }
+
                 $arrayOutput['result'] .= $data[0] . " - " . (string)$data[1] . " руб. Нет прихода\n";
                 $arrayOutput['sum'] -= $data[1];
             }
