@@ -49,19 +49,20 @@ try {
                     $pullMessages = [];
 
                     if($lengthText >= 4096) {
+                        $count = 1;
                         while (iconv_strlen($result['result']) >= 4096) {
+                            file_put_contents('log.txt', $count);
                             $preparePull = mb_substr($result['result'], 0, 4094);
 
                             if (preg_match('/(\\n)$/', $preparePull) === 1) {
                                 $pullMessages[] = $preparePull;
                             } else {
                                 $text = preg_replace('/([а-яА-Я .0-9-]+)$/', "", $preparePull);
-                                file_put_contents('log.txt', $text);
-                                exit;
                                 $lengthText = iconv_strlen($text);
                                 $result['result'] = mb_substr($result['result'], $lengthText);
                                 $pullMessages[] = $text;
                             }
+                            $count++;
                         }
                     }
                     $pullMessages[] = $result['result'];
