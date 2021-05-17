@@ -3,5 +3,11 @@
         "telegram-bot/api": "^2.3",
         "spatie/pdf-to-text": "^1.4",
         "nesbot/carbon": "^2.48"
+    },
+    "autoload": {
+        "psr-4": {
+            "AnswersTelegram\\": "AnswersTelegram",
+            "Models\\": "Models"
+        }
     }
 }

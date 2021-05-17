@@ -3,7 +3,6 @@ use AnswersTelegram\ButtonsTelegram;
 use Models\StatusMaker;
 use Models\FileWorker;
 
-require_once "autoloader.php";
 require_once "vendor/autoload.php";
 require_once "env.php";
 
