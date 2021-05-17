@@ -45,12 +45,12 @@ try {
                         $botApi->sendMessage($message->getChat()->getId(), $result['result']);
                     }
                 } else {
-                    $lengthText = iconv_strlen($result['result']);
+                    $lengthText = mb_strlen($result['result']);
                     $pullMessages = [];
 
                     if($lengthText >= 4096) {
                         $count = 1;
-                        while (iconv_strlen($result['result']) >= 4096) {
+                        while (mb_strlen($result['result']) >= 4096) {
                             file_put_contents('log.txt', $count);
                             $preparePull = mb_substr($result['result'], 0, 4094);
 
@@ -58,7 +58,7 @@ try {
                                 $pullMessages[] = $preparePull;
                             } else {
                                 $text = preg_replace('/([а-яА-Я .0-9-]+)$/', "", $preparePull);
-                                $lengthText = iconv_strlen($text);
+                                $lengthText = mb_strlen($text);
                                 $result['result'] = mb_substr($result['result'], $lengthText);
                                 $pullMessages[] = $text;
                             }
