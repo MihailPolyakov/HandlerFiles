@@ -101,14 +101,17 @@ class FileWorker
 
                 while (($array = fgetcsv($fopen)) != false){
                     $dateArray = date_parse($array[2] . " +3 hour");
-                    file_put_contents(__DIR__ . '/../log.txt', $array[2] . "\n" . $dateArray);
-                    exit;
+
                     $sum = round((float) $array[3], 2);
 
                     $day = $dateArray['day'] >= 10 ? (string) $dateArray['day'] : "0" . (string) $dateArray['day'];
                     $month = $dateArray['month'] >= 10 ? (string) $dateArray['month'] : "0" . (string) $dateArray['month'];
                     $year = (string) $dateArray['year'];
-                    $dateString =  $day . "." . $month . "." . $year;
+                    $hour = $dateArray['hour'] >= 10 ? (string) $dateArray['hour'] : "0" . (string) $dateArray['hour'];
+                    $minute = $dateArray['minute'] >= 10 ? (string) $dateArray['minute'] : "0" . (string) $dateArray['minute'];
+                    $dateString =  $day . "." . $month . "." . $year . " " . $hour . ":" . $minute;
+                    file_put_contents(__DIR__ . '/../log.txt', $array[2] . "\n" . $dateString);
+                    exit;
                     fputcsv($outputCsv, [$dateString, $array[3]]);
                     if(empty($arrayDataCsv[$dateString])) $arrayDataCsv[$dateString] = [];
 
