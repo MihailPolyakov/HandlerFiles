@@ -207,9 +207,6 @@ class FileWorker
                 }
             }
 
-            file_put_contents(__DIR__ . "/../log.txt", 'Finish search 2');
-            exit;
-
             $arrayOutput['sum'] = round($arrayOutput['sum'], 2);
             $arrayOutput['result'] .= "==========\n" . $arrayOutput['sum'] . " руб Итого разница";
 

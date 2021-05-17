@@ -37,6 +37,7 @@ try {
                 }
                 $botApi->sendMessage($message->getChat()->getId(), 'Генерация началась');
                 $result = FileWorker::generateReport($message->getChat()->getId());
+                file_put_contents('log.txt', json_encode($result));
                 if($result['sum'] === 0){
                     if($result['result'] === ''){
                         $botApi->sendMessage($message->getChat()->getId(), 'Все совпадает');
