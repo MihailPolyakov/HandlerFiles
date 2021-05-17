@@ -153,9 +153,9 @@ class FileWorker
                     $dateTime = Carbon::createFromFormat('d.m.Y H:i', $date)->getTimestamp();
 
                     file_put_contents(__DIR__ . "/../log.txt", json_encode([
-                        'result' => $range['min'] >= $dateTime && $dateTime <= $range['max'],
-                        'result1' => $range['min'] >= $dateTime,
-                        'result2' => $range['min'] >= $dateTime,
+                        'result' => $range['min'] <= $dateTime && $dateTime <= $range['max'],
+                        'result1' => $range['min'] <= $dateTime,
+                        'result2' => $range['max'] >= $dateTime,
                         'min' => $range['min'],
                         'max' => $range['max'],
                         'current' => $dateTime
