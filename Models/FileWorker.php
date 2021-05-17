@@ -141,6 +141,7 @@ class FileWorker
             }
 
             fputcsv($outputTin, ["Дата", "Сумма"]);
+            file_put_contents(__DIR__ . "/../log.txt", json_encode($arrayRangeDate));
             for($item = 1; $item < count($dates); $item += 2){
                 preg_match('/\d{2}[.]\d{2}[.]\d{4}\s\d{2}:\d{2}/', $dates[$item], $match);
                 $date = $match[0];
@@ -178,7 +179,7 @@ class FileWorker
             });
 
             fputcsv($outputCsv, $headerCsv);
-            file_put_contents(__DIR__ . "/../log.txt", json_encode($arrayDataTin));
+
             foreach ($arrayDataCsv as $data){
                 $dateObject = Carbon::createFromFormat('d.m.Y H:i', $data[0]);
                 fputcsv($outputCsv, [$data[0], preg_replace('/[.]/', ',', (string)$data[1]), $data[2]]);
