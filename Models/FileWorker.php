@@ -196,12 +196,11 @@ class FileWorker
                     }
                     $dateObject->addMinutes();
                 }
-                file_put_contents(__DIR__ . "/../log.txt", 'Остановился внутри, что не нашел время');
-                exit;
                 $arrayOutput['result'] .= $data[0] . " - " . (string)$data[1] . " руб. Нет прихода\n";
                 $arrayOutput['sum'] -= $data[1];
             }
-
+            file_put_contents(__DIR__ . "/../log.txt", 'Finish search');
+            exit;
             fclose($outputCsv);
 
             foreach ($arrayDataTin as $key => $value){
