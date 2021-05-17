@@ -119,10 +119,10 @@ class FileWorker
 
 
                 while (($array = fgetcsv($fopen)) != false){
-                    $dateString = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
-                    $dateStringMin = $dateString->getTimestamp();
-                    $dateStringMax = $dateString->addMinutes(5)->getTimestamp();
-                    $dateString = $dateString->format('d.m.Y H:i');
+                    $dateObject = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
+                    $dateString = $dateObject->format('d.m.Y H:i');
+                    $dateStringMin = $dateObject->getTimestamp();
+                    $dateStringMax = $dateObject->addMinutes(5)->getTimestamp();
                     $sum = round((float) $array[3], 2);
 
                     if($arrayRangeDate[$keyIndexRange]['min'] === 0 || $arrayRangeDate[$keyIndexRange]['min'] > $dateStringMin){
