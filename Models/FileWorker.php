@@ -149,6 +149,8 @@ class FileWorker
 
                 $existRange = false;
                 foreach ($arrayRangeDate as $range){
+                    file_put_contents(__DIR__ . "/../log.txt", count($range['min']) . "\n" . $date);
+                    exit;
                     if($range['min'] >= $date && $date <= $range['max']){
                         $existRange = true;
                         break;
@@ -175,8 +177,6 @@ class FileWorker
 
             fputcsv($outputCsv, $headerCsv);
 
-            file_put_contents(__DIR__ . "/../log.txt", json_encode($arrayDataTin));
-            exit;
             foreach ($arrayDataCsv as $data){
                 $dateObject = Carbon::createFromFormat('d.m.Y H:i', $data[0]);
                 fputcsv($outputCsv, [$data[0], preg_replace('/[.]/', ',', (string)$data[1]), $data[2]]);
