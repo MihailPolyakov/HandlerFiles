@@ -189,8 +189,6 @@ class FileWorker
                         $sumKey = array_search($data[1], $arrayDataTin[$dateString]);
                         if(!is_bool($sumKey)){
                             unset($arrayDataTin[$dateString][$sumKey]);
-                            file_put_contents(__DIR__ . "/../log.txt", 'Остановился внутри воиска времени');
-                            exit;
                             continue 2;
                         }
                     }
