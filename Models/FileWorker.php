@@ -186,17 +186,18 @@ class FileWorker
                 for($minute = 0; $minute <= 5; $minute++){
                     $dateString = $dateObject->format('d.m.Y H:i');
                     if(!empty($arrayDataTin[$dateString])){
-                        file_put_contents(__DIR__ . "/../log.txt", json_encode($arrayDataTin[$dateString]));
-                        exit;
                         $sumKey = array_search($data[1], $arrayDataTin[$dateString]);
                         if(!is_bool($sumKey)){
                             unset($arrayDataTin[$dateString][$sumKey]);
+                            file_put_contents(__DIR__ . "/../log.txt", 'Остановился внутри воиска времени');
+                            exit;
                             continue 2;
                         }
                     }
                     $dateObject->addMinutes();
                 }
-
+                file_put_contents(__DIR__ . "/../log.txt", 'Остановился внутри, что не нашел время');
+                exit;
                 $arrayOutput['result'] .= $data[0] . " - " . (string)$data[1] . " руб. Нет прихода\n";
                 $arrayOutput['sum'] -= $data[1];
             }
