@@ -179,9 +179,6 @@ class FileWorker
 
             fputcsv($outputCsv, $headerCsv);
 
-            file_put_contents(__DIR__ . "/../log.txt", json_encode($arrayDataCsv));
-            exit;
-
             foreach ($arrayDataCsv as $data){
                 $dateObject = Carbon::createFromFormat('d.m.Y H:i', $data[0]);
                 fputcsv($outputCsv, [$data[0], preg_replace('/[.]/', ',', (string)$data[1]), $data[2]]);
@@ -189,6 +186,8 @@ class FileWorker
                 for($minute = 0; $minute <= 5; $minute++){
                     $dateString = $dateObject->format('d.m.Y H:i');
                     if(!empty($arrayDataTin[$dateString])){
+                        file_put_contents(__DIR__ . "/../log.txt", json_encode($arrayDataTin[$dateString]));
+                        exit;
                         $sumKey = array_search($data[1], $arrayDataTin[$dateString]);
                         if(!is_bool($sumKey)){
                             unset($arrayDataTin[$dateString][$sumKey]);
