@@ -4,6 +4,9 @@
 namespace Models;
 
 
+use Carbon\Exceptions\BadComparisonUnitException;
+use Carbon\Exceptions\BadFluentConstructorException;
+use Carbon\Exceptions\BadFluentSetterException;
 use Spatie\PdfToText\Pdf;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Exception;
@@ -213,7 +216,7 @@ class FileWorker
             $arrayOutput['result'] .= "==========\n" . $arrayOutput['sum'] . " руб Итого разница\n";
 
             return $arrayOutput;
-        } catch (Exception $e){
+        } catch (\Exception | BadComparisonUnitException | BadFluentConstructorException | BadFluentSetterException $e){
             file_put_contents(__DIR__ . "/../log.txt", $e->getMessage());
             return [
                 'sum' => 0,
