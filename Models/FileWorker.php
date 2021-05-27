@@ -22,7 +22,7 @@ class FileWorker
             $mimeType = $document->getMimeType();
             $fileId = $document->getFileId();
             $fileName = $document->getFileName();
-
+            file_put_contents(__DIR__ . "/../log.txt", $mimeType);
             $folderFiles = null;
             $folderUser = $chatId;
             if(stripos($mimeType, 'csv') || stripos($mimeType, 'comma-separated-values')){
@@ -35,6 +35,9 @@ class FileWorker
 
             $pathFolderUser = __DIR__ . "/../Storage/" . $folderUser;
             $pathFolderFiles = __DIR__ . "/../Storage/" . $folderUser . "/" . $folderFiles;
+
+            $storageExist = file_exists(__DIR__ . "/../Storage");
+            if(!$storageExist) mkdir($storageExist);
             $folderUser = file_exists($pathFolderUser);
             if(!$folderUser) mkdir($pathFolderUser);
             $folderFiles = file_exists($pathFolderFiles);
@@ -48,6 +51,7 @@ class FileWorker
                 return true;
             }
         } catch (Exception $e){
+            file_put_contents(__DIR__ . "/../log.txt", $e->getMessage());
             return false;
         }
 
