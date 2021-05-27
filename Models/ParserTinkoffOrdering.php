@@ -5,8 +5,6 @@ namespace Models;
 require_once __DIR__ . "/../vendor/autoload.php";
 
 use Carbon\Carbon;
-use ConvertApi\ConvertApi;
-use Spatie\PdfToText\Pdf;
 
 class ParserTinkoffOrdering
 {
@@ -21,13 +19,15 @@ class ParserTinkoffOrdering
 
         if (preg_match('/[+]?\s\d{1,}\s?\d{0,}\s?\d{0,},\d{2}\s{0,}₽/', $fileTinkoffTxt)) {
             $this->parseOrderingWithComma($fileTinkoffTxt);
+        } elseif (preg_match('/[+]?\d{1,}\s?\d{0,}\s?\d{0,}[.]\d{2}\s{0,}RUB/', $fileTinkoffTxt)){
+            $this->parseOrderingWithDot($fileTinkoffTxt);
         } else {
             throw new \Error("Неверный формат выписки Тинькоф");
         }
 
     }
 
-    protected function parseYellowOrdering(string $fileTinkoffTxt){
+    /*protected function parseYellowOrdering(string $fileTinkoffTxt){
         preg_match_all('/\d{2}[.]\d{2}[.]\d{2}\s{1,3}\d?\d?:?\d?\d?/', $fileTinkoffTxt, $dates);
         preg_match_all('/[+]?\d{1,}\s?\d{0,}\s?\d{0,}[.]\d{2}\s{0,}₽/', $fileTinkoffTxt, $sums);
 
@@ -52,7 +52,7 @@ class ParserTinkoffOrdering
             if(empty(self::$arrayDataTinkoff[$date])) $arrayDataTin[$date] = [];
             self::$arrayDataTinkoff[$date][] = $sum;
         }
-    }
+    }*/
 
     protected function parseOrderingWithComma(string $fileTinkoffTxt){
         preg_match_all('/\d{2}[.]\d{2}[.]\d{4}\s{1,3}\d{2}:\d{2}/', $fileTinkoffTxt, $dates);
@@ -65,6 +65,29 @@ class ParserTinkoffOrdering
             if(!preg_match('/[+]/', $sums[$item])) continue;
 
             $sum = (float) str_replace(",", ".", str_replace([" ", "+", "₽", "\n"], "", $sums[$item]));
+            $date = preg_replace('/\s{1,}/', " ", $dates[$item]);
+
+            fputcsv(self::$resourceOutputFile, [$date, preg_replace('/[.]/', ',', (string) $sum)]);
+
+            if(!$this->isValidDatetime($date, 'd.m.Y H:i')) continue;
+
+            if(empty(self::$arrayDataTinkoff[$date])) $arrayDataTin[$date] = [];
+            self::$arrayDataTinkoff[$date][] = $sum;
+        }
+    }
+
+    protected function parseOrderingWithDot(string $fileTinkoffTxt){
+        preg_match_all('/\d{2}[.]\d{2}[.]\d{4}\s{1,3}\d{2}:\d{2}/', $fileTinkoffTxt, $dates);
+        preg_match_all('/[+]?\d{1,}\s?\d{0,}\s?\d{0,}[.]\d{2}\s{0,}RUB/', $fileTinkoffTxt, $sums);
+
+        $dates = array_reverse($dates[0]);
+        $sums = array_reverse(array_slice($sums[0], 2));
+
+        for($item=0; $item < count($dates); $item += 2){
+            if(!preg_match('/[+]/', $sums[$item])) continue;
+
+            $sum = (float) str_replace([" ", "+", "RUB", "\n"], "", $sums[$item]);
+
             $date = preg_replace('/\s{1,}/', " ", $dates[$item]);
 
             fputcsv(self::$resourceOutputFile, [$date, preg_replace('/[.]/', ',', (string) $sum)]);
