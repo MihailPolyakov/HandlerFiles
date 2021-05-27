@@ -67,9 +67,6 @@ class ParserTinkoffOrdering
             $sum = (float) str_replace(",", ".", str_replace([" ", "+", "₽", "\n"], "", $sums[$item]));
             $date = preg_replace('/\s{1,}/', " ", $dates[$item]);
 
-            print_r([$date, $sum]);
-            exit;
-
             fputcsv(self::$resourceOutputFile, [$date, preg_replace('/[.]/', ',', (string) $sum)]);
 
             if(!$this->isValidDatetime($date, 'd.m.Y H:i')) continue;
@@ -95,5 +92,3 @@ class ParserTinkoffOrdering
         return self::$arrayDataTinkoff;
     }
 }
-
-$test = new ParserTinkoffOrdering();
