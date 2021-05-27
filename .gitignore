@@ -2,3 +2,4 @@
 env.php
 log.txt
 vendor
+Storage/
