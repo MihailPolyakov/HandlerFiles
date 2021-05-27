@@ -16,6 +16,10 @@ class ParserTinkoffOrdering
 
     public function __construct(string $fileTinkoffTxt, array $minMaxTime, $resourceOutputFile){
 
+        self::$minMaxTime = $minMaxTime;
+        self::$resourceOutputFile = $resourceOutputFile;
+
+
         if (preg_match('/Выписка по договору/', $fileTinkoffTxt)){
             $this->parseYellowOrdering($fileTinkoffTxt);
         } elseif (preg_match('/[+]?\s\d{1,}\s?\d{0,}\s?\d{0,},\d{2}\s{0,}₽/', $fileTinkoffTxt)) {

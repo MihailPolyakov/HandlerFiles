@@ -8,7 +8,6 @@ use Carbon\Exceptions\BadComparisonUnitException;
 use Carbon\Exceptions\BadFluentConstructorException;
 use Carbon\Exceptions\BadFluentSetterException;
 use ConvertApi\ConvertApi;
-use Spatie\PdfToText\Pdf;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Exception;
 use TelegramBot\Api\Types\Document;
