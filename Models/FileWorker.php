@@ -7,6 +7,7 @@ namespace Models;
 use Carbon\Exceptions\BadComparisonUnitException;
 use Carbon\Exceptions\BadFluentConstructorException;
 use Carbon\Exceptions\BadFluentSetterException;
+use ConvertApi\ConvertApi;
 use Spatie\PdfToText\Pdf;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Exception;
@@ -91,11 +92,9 @@ class FileWorker
             $outputCsv = fopen($folderOutputFiles . "/output.csv", "w");
             $outputTin = fopen($folderOutputFiles . "/output_tin.csv", "w");
 
-            $filePdf = Pdf::getText($folderPathTin . "/" . $filePdf);
-            preg_match_all('/\d{2}[.]\d{2}[.]\d{4}\s{1,}\d{2}:\d{2}/', $filePdf, $dateMatch);
-            preg_match_all('/\d{1,}\s?\d{0,},\d{2}/', $filePdf, $sumMatch);
-            $dates = array_reverse($dateMatch[0]);
-            $sums = array_reverse(array_slice($sumMatch[0], 3));
+            ConvertApi::setApiSecret(SECRET_KEY_PDF_CONVERTER);
+            $convertedTinFile = ConvertApi::convert('txt', ['File' => $folderPathTin . "/" . $filePdf], "pdf");
+            $convertedTinFile = $convertedTinFile->getFile()->getContents();
 
             $arrayOutput = [
                 'sum' => 0,
@@ -144,8 +143,10 @@ class FileWorker
             }
 
             fputcsv($outputTin, ["Дата", "Сумма"]);
+            $parser = new ParserTinkoffOrdering($convertedTinFile, $arrayRangeDate, $outputTin);
+            $arrayDataTin = $parser->getArrayTinkoffData();
 
-            for($item = 1; $item < count($dates); $item += 2){
+            /*for($item = 1; $item < count($dates); $item += 2){
                 preg_match('/\d{2}[.]\d{2}[.]\d{4}\s\d{2}:\d{2}/', $dates[$item], $match);
                 $date = $match[0];
                 $sum = (float) preg_replace('/,/', ".", preg_replace('/\s/', '', $sums[$item]));
@@ -167,7 +168,7 @@ class FileWorker
                 if(empty($arrayDataTin[$date])) $arrayDataTin[$date] = [];
 
                 $arrayDataTin[$date][] = $sum;
-            }
+            }*/
 
             fclose($outputTin);
 

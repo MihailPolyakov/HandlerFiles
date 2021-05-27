@@ -12,21 +12,16 @@ class ParserTinkoffOrdering
 {
     protected static array $arrayDataTinkoff = [];
     protected static array $minMaxTime = [];
+    protected static $resourceOutputFile;
 
-    public function __construct(/*string $fileTinkoffTxt, array $minMaxTime*/){
-        /*self::$minMaxTime = $minMaxTime;
-        ConvertApi::setApiSecret('dcZNdfySQ5YFxgfF');
-        ConvertApi::convert('txt', ['File' => "/Users/mihailpolakov/PhpstormProjects/HandlerFiles/Storage/1766922243.pdf"], 'pdf');
-        $result = ConvertApi::convert('txt', [
-            'File' => "/Users/mihailpolakov/PhpstormProjects/HandlerFiles/Storage/1766922243.pdf",
-        ], 'pdf');
-        $fileTinkoffTxt = $result->getFile()->getContents();
-        //$fileTinkoffTxt = Pdf::getText("/Users/mihailpolakov/PhpstormProjects/HandlerFiles/Storage/1766922243.pdf", "/usr/local/bin/pdftotext");
-        */
-        $fileTinkoffTxt = file_get_contents("/Users/mihailpolakov/PhpstormProjects/HandlerFiles/Storage/1766922243.txt");
+    public function __construct(string $fileTinkoffTxt, array $minMaxTime, $resourceOutputFile){
+
         if (preg_match('/Выписка по договору/', $fileTinkoffTxt)){
             $this->parseYellowOrdering($fileTinkoffTxt);
+        } elseif (preg_match('/[+]?\s\d{1,}\s?\d{0,}\s?\d{0,},\d{2}\s{0,}₽/', $fileTinkoffTxt)) {
+            $this->parseOrderingWithComma($fileTinkoffTxt);
         }
+
     }
 
     protected function parseYellowOrdering(string $fileTinkoffTxt){
@@ -47,17 +42,35 @@ class ParserTinkoffOrdering
                 $date = preg_replace('/\s{1,}/', "", $dates[$item]) . " 00:00";
             }
 
+            fputcsv(self::$resourceOutputFile, [$date, preg_replace('/[.]/', ',', (string) $sum)]);
+
             if(!$this->isValidDatetime($date, 'd.m.y H:i')) continue;
 
             if(empty(self::$arrayDataTinkoff[$date])) $arrayDataTin[$date] = [];
             self::$arrayDataTinkoff[$date][] = $sum;
         }
-
-        var_dump(self::$arrayDataTinkoff);
     }
 
-    public static function getArrayTinkoffData(){
-        return self::$arrayDataTinkoff;
+    protected function parseOrderingWithComma(string $fileTinkoffTxt){
+        preg_match_all('/\d{2}[.]\d{2}[.]\d{4}\s{1,3}\d{2}:\d{2}/', $fileTinkoffTxt, $dates);
+        preg_match_all('/[+]?\s\d{1,}\s?\d{0,}\s?\d{0,},\d{2}\s{0,}₽/', $fileTinkoffTxt, $sums);
+
+        $dates = array_reverse($dates[0]);
+        $sums = array_reverse(array_slice($sums[0], 2));
+
+        for($item=0; $item < count($dates); $item += 2){
+            if(!preg_match('/[+]/', $sums[$item])) continue;
+
+            $sum = (float) str_replace(",", ".", str_replace([" ", "+", "₽", "\n"], "", $sums[$item]));
+            $date = preg_replace('/\s{1,}/', " ", $dates[$item]);
+
+            fputcsv(self::$resourceOutputFile, [$date, preg_replace('/[.]/', ',', (string) $sum)]);
+
+            if(!$this->isValidDatetime($date, 'd.m.Y H:i')) continue;
+
+            if(empty(self::$arrayDataTinkoff[$date])) $arrayDataTin[$date] = [];
+            self::$arrayDataTinkoff[$date][] = $sum;
+        }
     }
 
     protected function isValidDatetime(string $date, string $fromFormatDate): bool
@@ -70,6 +83,10 @@ class ParserTinkoffOrdering
             }
         }
         return false;
+    }
+
+    public function getArrayTinkoffData(){
+        return self::$arrayDataTinkoff;
     }
 }
 
