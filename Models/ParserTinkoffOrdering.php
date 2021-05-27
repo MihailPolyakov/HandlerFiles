@@ -19,7 +19,6 @@ class ParserTinkoffOrdering
         self::$minMaxTime = $minMaxTime;
         self::$resourceOutputFile = $resourceOutputFile;
 
-
         if (preg_match('/Выписка по договору/', $fileTinkoffTxt)){
             $this->parseYellowOrdering($fileTinkoffTxt);
         } elseif (preg_match('/[+]?\s\d{1,}\s?\d{0,}\s?\d{0,},\d{2}\s{0,}₽/', $fileTinkoffTxt)) {
@@ -67,6 +66,9 @@ class ParserTinkoffOrdering
 
             $sum = (float) str_replace(",", ".", str_replace([" ", "+", "₽", "\n"], "", $sums[$item]));
             $date = preg_replace('/\s{1,}/', " ", $dates[$item]);
+
+            print_r([$date, $sum]);
+            exit;
 
             fputcsv(self::$resourceOutputFile, [$date, preg_replace('/[.]/', ',', (string) $sum)]);
 

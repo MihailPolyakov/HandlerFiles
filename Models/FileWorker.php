@@ -8,6 +8,7 @@ use Carbon\Exceptions\BadComparisonUnitException;
 use Carbon\Exceptions\BadFluentConstructorException;
 use Carbon\Exceptions\BadFluentSetterException;
 use ConvertApi\ConvertApi;
+use Spatie\PdfToText\Pdf;
 use TelegramBot\Api\BotApi;
 use TelegramBot\Api\Exception;
 use TelegramBot\Api\Types\Document;
@@ -91,9 +92,7 @@ class FileWorker
             $outputCsv = fopen($folderOutputFiles . "/output.csv", "w");
             $outputTin = fopen($folderOutputFiles . "/output_tin.csv", "w");
 
-            ConvertApi::setApiSecret(SECRET_KEY_PDF_CONVERTER);
-            $convertedTinFile = ConvertApi::convert('txt', ['File' => $folderPathTin . "/" . $filePdf], "pdf");
-            $convertedTinFile = $convertedTinFile->getFile()->getContents();
+            $convertedTinFile = Pdf::getText($folderPathTin . "/" . $filePdf);
 
             $arrayOutput = [
                 'sum' => 0,
