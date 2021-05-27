@@ -19,10 +19,10 @@ class ParserTinkoffOrdering
         self::$minMaxTime = $minMaxTime;
         self::$resourceOutputFile = $resourceOutputFile;
 
-        if (preg_match('/Выписка по договору/', $fileTinkoffTxt)){
-            $this->parseYellowOrdering($fileTinkoffTxt);
-        } elseif (preg_match('/[+]?\s\d{1,}\s?\d{0,}\s?\d{0,},\d{2}\s{0,}₽/', $fileTinkoffTxt)) {
+        if (preg_match('/[+]?\s\d{1,}\s?\d{0,}\s?\d{0,},\d{2}\s{0,}₽/', $fileTinkoffTxt)) {
             $this->parseOrderingWithComma($fileTinkoffTxt);
+        } else {
+            throw new \Error("Неверный формат выписки Тинькоф");
         }
 
     }
