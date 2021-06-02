@@ -122,6 +122,8 @@ class FileWorker
 
 
                 while (($array = fgetcsv($fopen)) != false){
+                    file_put_contents(__DIR__ . "/../log1.txt", $array[2] . " " . $array[0]);
+                    if(!preg_match('/([.]\d{6})$/', $array[2])) $array[2] .= '.000000';
                     $dateObject = Carbon::createFromFormat('Y-m-d H:i:s.u', $array[2], 'UTC')->setTimezone('Europe/Moscow');
                     $dateString = $dateObject->format('d.m.Y H:i');
                     $dateStringMin = $dateObject->format('d.m.Y H:i');;
@@ -146,31 +148,6 @@ class FileWorker
             fputcsv($outputTin, ["Дата", "Сумма"]);
             $parser = new ParserTinkoffOrdering($convertedTinFile, $arrayRangeDate, $outputTin);
             $arrayDataTin = $parser->getArrayTinkoffData();
-
-            /*for($item = 1; $item < count($dates); $item += 2){
-                preg_match('/\d{2}[.]\d{2}[.]\d{4}\s\d{2}:\d{2}/', $dates[$item], $match);
-                $date = $match[0];
-                $sum = (float) preg_replace('/,/', ".", preg_replace('/\s/', '', $sums[$item]));
-
-                fputcsv($outputTin, [$dates[$item], preg_replace('/[.]/', ',', (string )$sum)]);
-
-                $existRange = false;
-
-                foreach ($arrayRangeDate as $range){
-                    $dateTime = Carbon::createFromFormat('d.m.Y H:i', $date)->format('d.m.Y H:i');;
-
-                    if($range['min'] <= $dateTime && $dateTime <= $range['max']){
-                        $existRange = true;
-                        break;
-                    }
-                }
-                if(!$existRange) continue;
-
-                if(empty($arrayDataTin[$date])) $arrayDataTin[$date] = [];
-
-                $arrayDataTin[$date][] = $sum;
-            }*/
-
             fclose($outputTin);
 
             usort($arrayDataCsv, function ($a, $b){
